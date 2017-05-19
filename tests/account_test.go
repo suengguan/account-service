@@ -1,37 +1,71 @@
 package test
 
 import (
-	_ "app-service/account-service/routers"
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
-	"net/http/httptest"
-	"path/filepath"
-	"runtime"
 	"testing"
 
-	"github.com/astaxie/beego"
-	. "github.com/smartystreets/goconvey/convey"
+	_ "app-service/account-service/routers"
+	"model"
 )
 
-func init() {
-	_, file, _, _ := runtime.Caller(1)
-	apppath, _ := filepath.Abs(filepath.Dir(filepath.Join(file, ".."+string(filepath.Separator))))
-	beego.TestBeegoInit(apppath)
-}
+const (
+	base_url = "http://localhost:8080/v1/account"
+)
 
-// TestGet is a sample to run an endpoint test
-func TestGet(t *testing.T) {
-	r, _ := http.NewRequest("GET", "/v1/object", nil)
-	w := httptest.NewRecorder()
-	beego.BeeApp.Handlers.ServeHTTP(w, r)
+func Test_Create(t *testing.T) {
+	var user model.User
+	user.Id = 0
+	user.Name = "user"
+	user.Email = "user@xx.com"
+	user.Company = "company"
+	user.Active = true
+	user.Role = 1
+	var resource model.Resource
+	resource.AlgorithmResource = "algorithm list"
+	resource.CpuTotalResource = 1
+	resource.CpuUsageResource = 0.5
+	resource.CpuUnit = "core"
+	resource.MemoryTotalResource = 1
+	resource.MemoryUsageResource = 0.5
+	resource.MemoryUnit = "Gi"
+	user.Resource = &resource
 
-	beego.Trace("testing", "TestGet", "Code[%d]\n%s", w.Code, w.Body.String())
+	// post create action
+	requestData, err := json.Marshal(&user)
+	if err != nil {
+		t.Log("erro : ", err)
+		return
+	}
 
-	Convey("Subject: Test Station Endpoint\n", t, func() {
-		Convey("Status Code Should Be 200", func() {
-			So(w.Code, ShouldEqual, 200)
-		})
-		Convey("The Result Should Not Be Empty", func() {
-			So(w.Body.Len(), ShouldBeGreaterThan, 0)
-		})
-	})
+	res, err := http.Post(base_url+"/register/", "application/x-www-form-urlencoded", bytes.NewBuffer(requestData))
+	if err != nil {
+		t.Log("erro : ", err)
+		return
+	}
+	defer res.Body.Close()
+
+	resBody, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Log("erro : ", err)
+		return
+	}
+
+	t.Log(string(resBody))
+
+	var response model.Response
+	json.Unmarshal(resBody, &response)
+	if err != nil {
+		t.Log("erro : ", err)
+		return
+	}
+
+	if response.Reason == "success" {
+		t.Log("PASS OK")
+	} else {
+		t.Log("ERROR:", response.Reason)
+		t.FailNow()
+	}
 }
