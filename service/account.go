@@ -538,7 +538,7 @@ func (this *AccountService) updateResource(resource *model.Resource) (*model.Res
 
 func (this *AccountService) createWorkspace(user *model.User) error {
 	var err error
-	var cfg beego.AppConfig
+	var cfg = beego.AppConfig
 
 	workspace := cfg.String("workspace")
 	inputPath := workspace + "/" + user.Name + "/data/input"
