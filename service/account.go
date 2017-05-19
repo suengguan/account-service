@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"config"
 	"encoding/json"
 	"model"
 
@@ -539,9 +538,11 @@ func (this *AccountService) updateResource(resource *model.Resource) (*model.Res
 
 func (this *AccountService) createWorkspace(user *model.User) error {
 	var err error
+	var cfg beego.AppConfig
 
-	inputPath := config.WORKSPACE_PATH + "/" + user.Name + "/data/input"
-	outputPath := config.WORKSPACE_PATH + "/" + user.Name + "/data/output"
+	workspace := cfg.String("workspace")
+	inputPath := workspace + "/" + user.Name + "/data/input"
+	outputPath := workspace + "/" + user.Name + "/data/output"
 
 	//beego.Debug("input  path :", inputPath)
 	//beego.Debug("output path :", outputPath)
