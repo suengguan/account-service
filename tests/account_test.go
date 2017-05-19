@@ -23,6 +23,7 @@ func Test_Create(t *testing.T) {
 	user.Company = "company"
 	user.Active = true
 	user.Role = 1
+	user.EncryptedPassword = "user"
 	var resource model.Resource
 	resource.AlgorithmResource = "algorithm list"
 	resource.CpuTotalResource = 1
