@@ -294,6 +294,7 @@ func (this *AccountService) CreateAdmin() error {
 	newAdmin.Resource = newResource
 
 	// create workspace dir
+	beego.Debug("create workspace")
 	err = this.createWorkspace(newAdmin)
 	if err != nil {
 		return err
@@ -544,8 +545,8 @@ func (this *AccountService) createWorkspace(user *model.User) error {
 	inputPath := workspace + "/" + user.Name + "/data/input"
 	outputPath := workspace + "/" + user.Name + "/data/output"
 
-	//beego.Debug("input  path :", inputPath)
-	//beego.Debug("output path :", outputPath)
+	beego.Debug("input  path :", inputPath)
+	beego.Debug("output path :", outputPath)
 
 	err = os.MkdirAll(inputPath, os.ModePerm) //生成多级目录
 	if err != nil {
